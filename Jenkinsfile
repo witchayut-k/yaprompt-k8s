@@ -8,7 +8,6 @@ def notify(message) {
     sh "curl ${url} -H 'Authorization: Bearer ${token}' -F 'message=${lineMessage}'";
 }
 
-
 pipeline {
     agent any
     environment {
