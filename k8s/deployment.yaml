@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: nestjs-k8s
 spec:
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: nestjs-k8s
@@ -11,9 +13,25 @@ spec:
     metadata:
       labels:
         app: nestjs-k8s
+        tier: nestjs-k8s
     spec:
       containers:
         - name: nestjs-k8s
           image: witchayut/nestjs-k8s
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
+              name: nestjs-k8s
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nestjs-k8s
+spec:
+  selector:
+    app: nestjs-k8s
+  ports:
+    - protocol: TCP
+      port: 3000
+  type: LoadBalancer
