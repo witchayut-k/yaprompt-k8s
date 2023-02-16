@@ -21,12 +21,14 @@ pipeline {
         stage("Checkout code") {
             steps {
                 checkout scm
+                notify("Jenkins start checkout code");
             }
         }
         stage("Build image") {
             steps {
                 script {
                     myapp = docker.build("witchayut/nestjs-k8s:${env.BUILD_ID}")
+                    notify("Jenkins build docker");
                 }
             }
         }
@@ -34,8 +36,9 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', 'dockerID') {
-                            myapp.push("latest")
-                            myapp.push("${env.BUILD_ID}")
+                        myapp.push("latest")
+                        myapp.push("${env.BUILD_ID}")
+                        notify("Jenkins docker build has been pushed");
                     }
                 }
             }
@@ -47,4 +50,12 @@ pipeline {
             }
         }
     }    
+    post {
+        success {
+            notifyLINE("succeed")
+        }
+        failure {
+            notifyLINE("failed")
+        }
+    }
 }
